@@ -7,10 +7,12 @@ import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat.getSystemService
+import kotlinx.android.synthetic.main.activity_main.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
 import com.dmburackov.converter.databinding.FragmentConverterBinding
+import kotlinx.android.synthetic.main.fragment_converter.*
 import java.math.BigDecimal
 import java.util.*
 
@@ -29,6 +31,8 @@ class ConverterFragment : Fragment() {
 
     private lateinit var limitToast : Toast
     private lateinit var copyToast : Toast
+    private lateinit var pasteToast : Toast
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,18 +68,34 @@ class ConverterFragment : Fragment() {
 
         binding.swapButton.setOnClickListener { swap() }
 
+        binding.pasteFromImage.setOnClickListener { paste() }
+
         limitToast = Toast.makeText(requireActivity(), "Input max length limit.", Toast.LENGTH_SHORT)
         limitToast.setGravity(Gravity.CENTER, 0, 0);
 
-        copyToast = Toast.makeText(requireActivity(), "Text copied to clipboard", Toast.LENGTH_SHORT)
+        copyToast = Toast.makeText(requireActivity(), "Text copied to clipboard.", Toast.LENGTH_SHORT)
         copyToast.setGravity(Gravity.CENTER, 0, 0);
+
+        pasteToast = Toast.makeText(requireActivity(), "Invalid paste data.", Toast.LENGTH_SHORT)
+        pasteToast.setGravity(Gravity.CENTER, 0, 0);
 
         binding.fromEditText.requestFocus()
         setupEditText(binding.fromEditText)
 
+        binding.fromEditText.setCustomSelectionActionModeCallback()
+        binding.fromEditText.setCustomInsertionActionModeCallback()
+
         setupMainSpinner()
         setupFromSpinner()
         setupToSpinner()
+    }
+
+    override fun onCreateContextMenu(
+        menu: ContextMenu,
+        v: View,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
+        super.onCreateContextMenu(menu, v, menuInfo)
     }
 
     private fun copyTextToClipboard(view : TextView) {
@@ -84,6 +104,42 @@ class ConverterFragment : Fragment() {
         val clipData = ClipData.newPlainText("text", textToCopy)
         clipboardManager.setPrimaryClip(clipData)
         copyToast.show()
+    }
+
+    private fun paste() {
+        val clipboardManager = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        var curr = clipboardManager.primaryClip?.getItemAt(0)?.text.toString()
+        var dots : Int = 0
+        var correct = true
+
+        for (item in curr) {
+            if (item !in '0'..'9') {
+                 if (item == '.') {
+                     ++dots
+                 } else {
+                     correct = false
+                 }
+            }
+        }
+
+        if (dots > 1) {
+            correct = false
+        }
+        if (curr.length > 1) {
+            if (curr[0] == '0' && curr[1] != '.') {
+                correct = false
+            }
+        }
+        if (numberCount(curr) > 15) {
+            correct = false
+        }
+
+        if (correct) {
+            viewModel.fromText.value = curr
+            binding.fromEditText.setSelection(binding.fromEditText.length())
+        } else {
+            pasteToast.show()
+        }
     }
 
     private fun swap() {
@@ -100,11 +156,11 @@ class ConverterFragment : Fragment() {
 
     private fun setupEditText(view: EditText){
         view.showSoftInputOnFocus = false
-        view.setOnClickListener {
-            view.isCursorVisible = false
-            view.isCursorVisible = true
-            view.setSelection(view.length())
-        }
+//        view.setOnClickListener {
+//            view.isCursorVisible = false
+//            view.isCursorVisible = true
+//            view.setSelection(view.length())
+//        }
         //view.setHighlightColor(Color.TRANSPARENT)
         view.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
@@ -124,11 +180,12 @@ class ConverterFragment : Fragment() {
             }
 
             override fun onActionItemClicked(p0: ActionMode?, p1: MenuItem?): Boolean {
-                return true
+                return false
             }
 
             override fun onDestroyActionMode(p0: ActionMode?) {}
         }
+        view.isLongClickable = false
     }
 
     private fun numberCount(curr: String) : Int {
@@ -146,13 +203,17 @@ class ConverterFragment : Fragment() {
 
         if (focusView == binding.fromEditText) {
             var curr : String = binding.fromEditText.text.toString()
+            val cursorPosition = binding.fromEditText.selectionStart
             when (value) {
                 "clear" -> {
                     curr = ""
+                    viewModel.fromText.value = curr
                 }
                 "delete" -> {
-                    if (curr.isNotEmpty()) {
-                        curr = curr.substring(0, curr.length - 1)
+                    if (curr.isNotEmpty() && cursorPosition > 0) {
+                        curr = StringBuilder(curr).deleteRange(cursorPosition - 1, cursorPosition).toString()
+                        viewModel.fromText.value = curr
+                        binding.fromEditText.setSelection(cursorPosition - 1)
                     }
                 }
                 "." -> {
@@ -163,30 +224,53 @@ class ConverterFragment : Fragment() {
                         }
                     }
                     if (!pointExist) {
-                        if (curr.isEmpty()) {
-                            curr = curr.plus("0$value")
+                        if (cursorPosition == 0) {
+                            curr = StringBuilder(curr).insert(cursorPosition, "0$value").toString()
+                            viewModel.fromText.value = curr
+                            binding.fromEditText.setSelection(cursorPosition + 2)
                         } else {
-                            curr = curr.plus(value)
+                            curr = StringBuilder(curr).insert(cursorPosition, value).toString()
+                            viewModel.fromText.value = curr
+                            binding.fromEditText.setSelection(cursorPosition + 1)
                         }
                     }
                 }
                 else -> {
                     var count : Int = numberCount(curr)
-
                     if (count == 15) {
-                        limitToast.show()
-                    } else {
-                        if (curr.length == 1 && curr[0] == '0') {
-                            curr = value
+                        if (cursorPosition > curr.indexOf(".") && cursorPosition != curr.length && curr.endsWith("0") && curr.indexOf(".") != -1) {
+                            curr = StringBuilder(curr).deleteRange(15, 16).toString()
+                            curr = StringBuilder(curr).insert(cursorPosition, value).toString()
+                            viewModel.fromText.value = curr
+                            binding.fromEditText.setSelection(cursorPosition + 1)
                         } else {
-                            curr = curr.plus(value)
+                            limitToast.show()
+                        }
+                    } else {
+                        if (value == "0") {
+                            if (!(cursorPosition == 0 && curr.isNotEmpty()) && !(cursorPosition == 1 && curr[0] == '0')) {
+                                curr = StringBuilder(curr).insert(cursorPosition, value).toString()
+                                viewModel.fromText.value = curr
+                                binding.fromEditText.setSelection(cursorPosition + 1)
+                            }
+                        } else {
+                            if (curr == "0" && cursorPosition == 1) {
+                                curr = value
+                                viewModel.fromText.value = curr
+                                binding.fromEditText.setSelection(binding.fromEditText.length())
+                            } else {
+                                curr = StringBuilder(curr).insert(cursorPosition, value).toString()
+                                viewModel.fromText.value = curr
+                                binding.fromEditText.setSelection(cursorPosition + 1)
+                            }
                         }
                     }
                 }
             }
 
-            viewModel.fromText.value = curr
-            binding.fromEditText.setSelection(binding.fromEditText.length())
+            //viewModel.fromText.value = curr
+
+            //binding.fromEditText.setSelection(binding.fromEditText.length())
             updateResultText()
         }
     }
@@ -195,7 +279,7 @@ class ConverterFragment : Fragment() {
         var curr : String = binding.fromEditText.text.toString()
         if (curr.isNotEmpty()) {
             Formatter.BigDecimalLayoutForm.SCIENTIFIC
-            var convertValue: BigDecimal = curr.toBigDecimal()
+            var convertValue: BigDecimal = curr.toBigDecimal().setScale(25)
             var coefFrom: Double = 0.0
             var coefTo: Double = 0.0
 
@@ -213,7 +297,12 @@ class ConverterFragment : Fragment() {
                     coefTo = volumeValue[viewModel.currentToUnit]
                 }
             }
-            convertValue = convertValue * (coefTo / coefFrom).toBigDecimal()
+
+            if (coefTo < coefFrom) {
+                convertValue = convertValue * coefTo.toBigDecimal() / coefFrom.toBigDecimal()
+            } else {
+                convertValue = convertValue / coefFrom.toBigDecimal() * coefTo.toBigDecimal()
+            }
 
             var resultString = convertValue.toString()
 
@@ -227,10 +316,6 @@ class ConverterFragment : Fragment() {
                 str = str.plus(resultString.substring(resultString.indexOf(".") + 1, resultString.indexOf("E") - 1))
                 resultString = str
             }
-
-//            if (resultString.indexOf(".") != -1) {
-//                resultString = resultString.substring(0, min(resultString.length, 23))
-//            }
 
             if (resultString.indexOf(".") != -1) {
                 if (resultString[0] == '0') {
