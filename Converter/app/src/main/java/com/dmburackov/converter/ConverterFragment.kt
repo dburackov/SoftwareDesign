@@ -1,21 +1,18 @@
 package com.dmburackov.converter
 
-import android.graphics.Color
-import android.opengl.Visibility
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
-import android.text.Selection.setSelection
 import android.view.*
 import android.widget.*
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
 import com.dmburackov.converter.databinding.FragmentConverterBinding
 import java.math.BigDecimal
-import java.math.BigDecimal.ROUND_HALF_UP
-import java.math.MathContext
 import java.util.*
-import java.util.Collections.swap
 
 
 class ConverterFragment : Fragment() {
@@ -24,13 +21,14 @@ class ConverterFragment : Fragment() {
 
     private val categories = arrayOf("Length", "Weight", "Volume")
     private val weight = arrayOf("kg", "g", "q", "lb", "t")
-    private val weightValue = arrayOf(1.0, 1000.0, 0.01, 2.2046226218488, 0.001)
+    private val weightValue = arrayOf(1.0, 1000.0, 0.01, 2.204622, 0.001)
     private val length = arrayOf("m", "cm", "km", "mi", "in", "ft", "yd")
-    private val lengthValue = arrayOf(1.0, 100.0, 0.001, 0.00062137119223734, 39.3701, 3.28084, 1.0936132983378)
+    private val lengthValue = arrayOf(1.0, 100.0, 0.001, 0.000621, 39.3701, 3.28084, 1.093613)
     private val volume = arrayOf("m3", "l", "hl", "qt", "gal")
     private val volumeValue =  arrayOf(1.0, 1000.0, 10.0, 1056.69, 264.172)
 
     private lateinit var limitToast : Toast
+    private lateinit var copyToast : Toast
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,14 +51,6 @@ class ConverterFragment : Fragment() {
             keyPressed(it)
         }
 
-//        viewModel.showSwapButton.observe(activity as LifecycleOwner) {
-//            if (viewModel.showSwapButton.value == true) {
-//                binding.swapButton.visibility = View.VISIBLE
-//            } else {
-//                binding.swapButton.visibility = View.GONE
-//            }
-//        }
-
         viewModel.showSwapButton.observe(activity as LifecycleOwner, androidx.lifecycle.Observer { value ->
             if (value) {
                 binding.swapButton.visibility = View.VISIBLE
@@ -69,10 +59,16 @@ class ConverterFragment : Fragment() {
             }
         })
 
+        binding.copyFromImage.setOnClickListener { copyTextToClipboard(binding.fromEditText) }
+        binding.copyToImage.setOnClickListener { copyTextToClipboard(binding.toEditText) }
+
         binding.swapButton.setOnClickListener { swap() }
 
         limitToast = Toast.makeText(requireActivity(), "Input max length limit.", Toast.LENGTH_SHORT)
         limitToast.setGravity(Gravity.CENTER, 0, 0);
+
+        copyToast = Toast.makeText(requireActivity(), "Text copied to clipboard", Toast.LENGTH_SHORT)
+        copyToast.setGravity(Gravity.CENTER, 0, 0);
 
         binding.fromEditText.requestFocus()
         setupEditText(binding.fromEditText)
@@ -82,8 +78,24 @@ class ConverterFragment : Fragment() {
         setupToSpinner()
     }
 
-    private fun swap() {
+    private fun copyTextToClipboard(view : TextView) {
+        val textToCopy = view.text
+        val clipboardManager = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("text", textToCopy)
+        clipboardManager.setPrimaryClip(clipData)
+        copyToast.show()
+    }
 
+    private fun swap() {
+        var temp = viewModel.currentToUnit
+        viewModel.currentToUnit = viewModel.currentFromUnit
+        viewModel.currentFromUnit = temp
+
+        viewModel.fromText.value = viewModel.toText.value
+
+        binding.fromEditText.setSelection(binding.fromEditText.length())
+        setupFromSpinner()
+        setupToSpinner()
     }
 
     private fun setupEditText(view: EditText){
@@ -173,8 +185,6 @@ class ConverterFragment : Fragment() {
                 }
             }
 
-            Toast.makeText(requireActivity(), numberCount(binding.toEditText.text.toString()).toString(), Toast.LENGTH_SHORT).show()
-            viewModel.showSwapButton.value = numberCount(binding.toEditText.text.toString()) <= 15
             viewModel.fromText.value = curr
             binding.fromEditText.setSelection(binding.fromEditText.length())
             updateResultText()
@@ -218,8 +228,22 @@ class ConverterFragment : Fragment() {
                 resultString = str
             }
 
+//            if (resultString.indexOf(".") != -1) {
+//                resultString = resultString.substring(0, min(resultString.length, 23))
+//            }
+
             if (resultString.indexOf(".") != -1) {
-                resultString = resultString.substring(0, min(resultString.length, 23))
+                if (resultString[0] == '0') {
+                    resultString = resultString.substring(0, min(resultString.length, 23))
+                } else {
+                    if (resultString.indexOf(".") <= 6) {
+                        resultString = resultString.substring(0, min(resultString.length, resultString.indexOf(".") + 8))
+                    } else if (resultString.indexOf(".") <= 17) {
+                        resultString = resultString.substring(0, min(resultString.length, resultString.indexOf(".") + 6))
+                    } else {
+                        resultString = resultString.substring(0, min(resultString.length, 23))
+                    }
+                }
             }
 
             while (resultString.last() == '0') {
@@ -234,6 +258,7 @@ class ConverterFragment : Fragment() {
         } else {
             viewModel.toText.value = ""
         }
+        viewModel.showSwapButton.value = numberCount(binding.toEditText.text.toString()) <= 15
     }
 
     private fun min(x: Int, y: Int): Int {
