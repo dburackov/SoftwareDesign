@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".TimerFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/list_item_bg">
+        
+        <TextView
+            android:id="@+id/phase_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:textAlignment="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+        
+        <TextView
+            android:id="@+id/time_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0000"
+            android:textColor="@color/white"
+            android:textSize="120sp"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@id/phase_name_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+        
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/phase_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/time_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/start_stop_button"/>
+        
+        <ImageButton
+            android:id="@+id/prev_button"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/ic_skip_previous"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/start_stop_button"/>
+
+        <ImageButton
+            android:id="@+id/start_stop_button"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/ic_play_arrow_70"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/prev_button"
+            app:layout_constraintEnd_toStartOf="@id/next_button"/>
+
+        <ImageButton
+            android:id="@+id/next_button"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:src="@drawable/ic_skip_next"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/start_stop_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+        
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

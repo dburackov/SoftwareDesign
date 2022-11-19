@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".EditFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/content_margin"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Title"
+                style="@style/edit_fragment_text" />
+
+            <EditText
+                android:id="@+id/title_edit"
+                android:layout_width="match_parent"
+                style="@style/edit_fragment_edit"
+                android:maxLength="30"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/content_margin">
+
+        <TextView
+            android:id="@+id/warmup_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Warm up"
+            style="@style/edit_fragment_text" />
+
+        <EditText
+            android:id="@+id/warmup_edit"
+            android:layout_width="match_parent"
+            android:inputType="number"
+            style="@style/edit_fragment_edit"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/content_margin">
+
+            <TextView
+                android:id="@+id/work_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Work"
+                style="@style/edit_fragment_text" />
+
+            <EditText
+                android:id="@+id/work_edit"
+                android:layout_width="match_parent"
+                android:inputType="number"
+                style="@style/edit_fragment_edit"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/content_margin">
+
+            <TextView
+                android:id="@+id/rest_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Rest"
+                style="@style/edit_fragment_text" />
+
+            <EditText
+                android:id="@+id/rest_edit"
+                android:layout_width="match_parent"
+                android:inputType="number"
+                style="@style/edit_fragment_edit"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/content_margin">
+
+            <TextView
+                android:id="@+id/cycles_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cycles"
+                style="@style/edit_fragment_text" />
+
+            <EditText
+                android:id="@+id/cycles_edit"
+                android:layout_width="match_parent"
+                android:inputType="number"
+                style="@style/edit_fragment_edit"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/content_margin">
+
+            <TextView
+                android:id="@+id/cooldown_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cooldown"
+                style="@style/edit_fragment_text" />
+
+            <EditText
+                android:id="@+id/cooldown_edit"
+                android:layout_width="match_parent"
+                android:inputType="number"
+                style="@style/edit_fragment_edit"/>
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+</FrameLayout>
