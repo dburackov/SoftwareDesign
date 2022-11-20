@@ -14,7 +14,7 @@
         android:background="@color/list_item_bg">
         
         <TextView
-            android:id="@+id/phase_name_text"
+            android:id="@+id/stage_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Name"
@@ -33,7 +33,7 @@
             android:textColor="@color/white"
             android:textSize="120sp"
             android:textAlignment="center"
-            app:layout_constraintTop_toBottomOf="@id/phase_name_text"
+            app:layout_constraintTop_toBottomOf="@id/stage_text"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
         

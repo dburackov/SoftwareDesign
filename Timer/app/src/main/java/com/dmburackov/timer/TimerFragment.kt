@@ -22,7 +22,6 @@ class TimerFragment : Fragment() {
 
     private var timerStarted = false
     private lateinit var serviceIntent: Intent
-    private var time = 0.0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentTimerBinding.inflate(inflater)
@@ -37,11 +36,20 @@ class TimerFragment : Fragment() {
         (activity as MainActivity).supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#${workout.color}")))
         (activity as MainActivity).supportActionBar?.title = workout.title
         binding.mainLayout.background = ColorDrawable(Color.parseColor("#${workout.color}"))
+        binding.timeText.text = workout.warmup.toString()
+        binding.stageText.text = "Warm up"
 
         initButtons()
 
+        startService()
+
+        activity?.registerReceiver(updateTime, IntentFilter(TimerService.TIMER_UPDATED))
+    }
+
+    private fun startService() {
         serviceIntent = Intent(context, TimerService::class.java)
-        //activity?.registerReceiver(updateTime, IntentFilter(TimerService.TIMER_UPDATED))
+        serviceIntent.putExtra(TimerService.WORKOUT, workout.getValues())
+        activity?.startService(serviceIntent)
     }
 
     private fun initButtons() {
@@ -54,37 +62,54 @@ class TimerFragment : Fragment() {
                 }
             }
             nextButton.setOnClickListener {
-
+                nextStage()
             }
             prevButton.setOnClickListener {
-
+                prevStage()
             }
         }
     }
 
     private fun startTimer() {
-       // activity?.startService(serviceIntent)
-        //serviceIntent.putExtra("a", 0)
+        val intent = Intent(TimerService.CONTROL_ACTION)
+        intent.putExtra(TimerService.CONTROL_ACTION, TimerService.TIMER_START)
+        activity?.sendBroadcast(intent)
 
-        //activity?.startService(Intent(context, TimerService::class.java))
-
-        //serviceIntent.putExtra(TimerService.TIMER_EXTRA, time)
-        //activity?.startService(serviceIntent)
         timerStarted = true
         binding.startStopButton.setImageResource(R.drawable.ic_pause_70)
     }
 
     private fun stopTimer() {
-        activity?.stopService(Intent(context, TimerService::class.java))
-        //activity?.stopService(serviceIntent)
+        val intent = Intent(TimerService.CONTROL_ACTION)
+        intent.putExtra(TimerService.CONTROL_ACTION, TimerService.TIMER_STOP)
+        activity?.sendBroadcast(intent)
+
         timerStarted = false
         binding.startStopButton.setImageResource(R.drawable.ic_play_arrow_70)
     }
 
+    private fun prevStage() {
+        //check
+        val intent = Intent(TimerService.CONTROL_ACTION)
+        intent.putExtra(TimerService.CONTROL_ACTION, TimerService.PREV_STAGE)
+        activity?.sendBroadcast(intent)
+        //recycler view something do
+    }
+
+    private fun nextStage() {
+        //check
+        val intent = Intent(TimerService.CONTROL_ACTION)
+        intent.putExtra(TimerService.CONTROL_ACTION, TimerService.NEXT_STAGE)
+        activity?.sendBroadcast(intent)
+        //recycler view ....
+    }
+
     private val updateTime : BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            time = intent.getDoubleExtra(TimerService.TIMER_EXTRA, 0.0)
-            binding.timeText.text = time.roundToInt().toString()
+            val time = intent.getIntExtra(TimerService.CURRENT_TIME, 0)
+            val stage = intent.getStringExtra(TimerService.CURRENT_STAGE)
+            binding.timeText.text = time.toString()
+            binding.stageText.text = stage
         }
     }
 }

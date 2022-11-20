@@ -154,6 +154,9 @@ class EditFragment : Fragment(), MenuProvider {
                 palette.show(parentFragmentManager, "palette")
                 true
             }
+//            android.R.id.home -> {
+//                true
+//            }
             else -> false
         }
     }

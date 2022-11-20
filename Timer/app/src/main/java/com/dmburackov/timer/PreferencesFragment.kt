@@ -41,7 +41,7 @@ class PreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnShare
     override fun onSharedPreferenceChanged(prefs: SharedPreferences?, key: String?) {
         when (key) {
             "theme" -> {
-                activity?.recreate()
+                //activity?.recreate()
             }
             "language" -> {
                 activity?.recreate()
