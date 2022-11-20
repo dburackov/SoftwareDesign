@@ -5,17 +5,34 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
+import android.content.IntentFilter
+import android.os.CountDownTimer
 import android.os.IBinder
-import android.util.Log
-import androidx.core.content.getSystemService
 import java.util.*
 
 class TimerService : Service() {
-    private val timer = Timer()
+    companion object {
+        const val TIMER_UPDATED = "timerUpdated"
+        const val WORKOUT = "workout"
+        const val CURRENT_TIME = "currentTime"
+        const val CURRENT_STAGE = "currentStage"
+        const val CONTROL_ACTION = "controlAction"
+        const val TIMER_START = 0
+        const val TIMER_STOP = 1
+        const val PREV_STAGE = 2
+        const val NEXT_STAGE = 3
+        const val CHANNEL_ID = "timerChannel"
+        const val NOTIFICATION_ID = 13
+    }
+
     private lateinit var notificationManager : NotificationManager
+    private lateinit var workout : IntArray
+    private var currentTime : Int = 0
+    private var currentStage : Int = 0
+    private var timer : CountDownTimer? = null
 
     override fun onBind(p0: Intent?): IBinder? = null
 
@@ -25,12 +42,71 @@ class TimerService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        //val time = intent.getDoubleExtra(TIMER_EXTRA, 0.0)
-        //timer.scheduleAtFixedRate(TimeTask(time), 0, 1000)
+        workout = intent.getIntArrayExtra(WORKOUT)!!
+        currentTime = workout.first()
 
-        showNotification()
+        //showNotification("init timer value")
 
+        registerReceiver(controlAction, IntentFilter(CONTROL_ACTION))
         return START_NOT_STICKY
+    }
+
+    fun startTimer() {
+        //val time = Intent().getDoubleExtra(TIME, 0.0)
+        //timer.scheduleAtFixedRate(TimeTask(time), 0, 1000)
+        timer?.cancel()
+        timer = object : CountDownTimer(currentTime.toLong() * 1000, 1) {
+            override fun onTick(remaining: Long) {
+                if (remaining / 1000 < currentTime) {
+                    currentTime--
+                    val intent = Intent(TIMER_UPDATED)
+                    intent.putExtra(CURRENT_TIME, (currentTime + 1)) //currentTime + 1
+                    val stageName = Workout.getStageName(currentStage, workout.size)
+                    intent.putExtra(CURRENT_STAGE, stageName)
+                    showNotification((currentTime + 1).toString(), stageName) //currentTime + 1
+                    sendBroadcast(intent)
+                }
+            }
+            override fun onFinish() {
+                currentStage++
+                if (currentStage < workout.size) {
+                    currentTime = workout[currentStage]
+                    startTimer()
+                }
+            }
+        }.start()
+
+    }
+
+    fun stopTimer() {
+        timer?.cancel()
+    }
+
+    override fun onDestroy() {
+        timer?.cancel()
+        notificationManager.cancelAll()
+        super.onDestroy()
+    }
+
+    private val controlAction : BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.getIntExtra(CONTROL_ACTION, -1)) {
+                TIMER_START -> { //start timer
+                    startTimer()
+                }
+                TIMER_STOP -> { //stop timer
+                    stopTimer()
+                }
+                PREV_STAGE -> { //prev stage
+                    showNotification("prev stage", "adsf")
+                }
+                NEXT_STAGE -> { //next stage
+                    showNotification("next stage", "adsf")
+                }
+                else -> {} //default value
+            }
+        }
+
     }
 
     private fun createNotificationChannel(){
@@ -39,13 +115,14 @@ class TimerService : Service() {
         notificationManager.createNotificationChannel(channel)
     }
 
-    private fun showNotification() {
+    private fun showNotification(time : String, stage : String) {
         val notificationIntent = Intent(this, MainActivity::class.java)
 
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
 
         val notification = Notification.Builder(this, CHANNEL_ID)
-            .setContentText("ABOBA")
+            .setContentTitle(time)
+            .setContentText(stage)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentIntent(pendingIntent)
             .build()
@@ -53,53 +130,14 @@ class TimerService : Service() {
         startForeground(NOTIFICATION_ID, notification)
     }
 
-    private fun displayNotification(contentForHeader: String, contentForFooter:String){
-        val notificationId = 13
-        val notification = Notification.Builder(application, CHANNEL_ID)
-            .setContentTitle(contentForHeader)
-            .setContentText(contentForFooter)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setAutoCancel(true)
-            .setPriority(Notification.PRIORITY_HIGH)
-            .setOnlyAlertOnce(true)
-            .setOngoing(true)
-            .build()
-
-        notificationManager?.notify(notificationId, notification)
-    }
-
-    fun start() {
-        val time = Intent().getDoubleExtra(TIMER_EXTRA, 0.0)
-        timer.scheduleAtFixedRate(TimeTask(time), 0, 1000)
-        //timer.scheduleAtFixedRate(TimeTask(time), 0, 1000)
-    }
-
-    fun pause() {
-        timer.cancel()
-    }
-
-    override fun onDestroy() {
-        timer.cancel()
-        notificationManager.cancelAll()
-        Log.d("AAA", "service was destroy")
-        super.onDestroy()
-    }
-
-    private inner class TimeTask(private var time : Double) : TimerTask() {
-        override fun run() {
-            val intent = Intent(TIMER_UPDATED)
-            time++
-            intent.putExtra(TIMER_EXTRA, time)
-            displayNotification("$time","Repeats: /")
-            sendBroadcast(intent)
-        }
-
-    }
-
-    companion object {
-        const val TIMER_UPDATED = "timerUpdated"
-        const val TIMER_EXTRA = "timerExtra"
-        const val CHANNEL_ID = "timerChannel"
-        const val NOTIFICATION_ID = 13
-    }
+//    private inner class TimeTask(private var time : Double) : TimerTask() {
+//        override fun run() {
+//            val intent = Intent(TIMER_UPDATED)
+//            time++
+//            intent.putExtra(TIME, time)
+//            displayNotification("$time","Repeats: /")
+//            sendBroadcast(intent)
+//        }
+//
+//    }
 }
