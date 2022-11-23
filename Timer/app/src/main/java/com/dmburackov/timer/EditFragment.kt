@@ -38,12 +38,12 @@ class EditFragment : Fragment(), MenuProvider {
         toast = Toast.makeText(requireActivity(), "Incorrect input values!", Toast.LENGTH_SHORT)
         toast.setGravity(Gravity.CENTER, 0, 0)
 
-        createState = viewModel.workoutEdit.value == -1
+        createState = viewModel.workoutEdit== -1
         (activity as MainActivity).supportActionBar?.title = if (createState) {"Create"} else {"Edit"}
         if (createState) {
             binding.titleEdit.setText("Workout ${viewModel.db.size() + 1}")
         } else {
-            workout = viewModel.db.getWorkoutById(viewModel.workoutEdit.value!!.toInt())
+            workout = viewModel.db.getWorkoutById(viewModel.workoutEdit)
             binding.titleEdit.setText(workout.title)
         }
         (activity as MainActivity).supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#${workout.color}")))

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.dmburackov.timer.databinding.PaletteListItemBinding
 
-class PaletteRecyclerViewAdapter(private val currentColor : String, val listener: Listener)
+class PaletteRecyclerViewAdapter(private val currentColor : String, private val listener: Listener)
     : RecyclerView.Adapter<PaletteRecyclerViewAdapter.PaletteViewHolder>()
 {
 

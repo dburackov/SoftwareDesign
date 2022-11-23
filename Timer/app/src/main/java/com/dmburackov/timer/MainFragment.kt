@@ -18,7 +18,7 @@ import com.dmburackov.timer.databinding.FragmentMainBinding
 import com.google.android.material.color.MaterialColors
 
 
-class MainFragment : Fragment(), MenuProvider {
+class MainFragment : Fragment(), MenuProvider, WorkoutRecyclerViewAdapter.Listener {
     private lateinit var binding: FragmentMainBinding
     private val viewModel : MainViewModel by activityViewModels()
 
@@ -33,16 +33,13 @@ class MainFragment : Fragment(), MenuProvider {
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         (activity as MainActivity).supportActionBar?.title = "Workouts: ${viewModel.db.size()}"
-//        (activity as MainActivity).supportActionBar?.setBackgroundDrawable(ColorDrawable(Color.parseColor("#${viewModel.db.getWorkoutByPosition(0).color}")))
-        //val col = MaterialColors.getColor(view, com.google.android.material.R.attr.colorPrimaryVariant)
         (activity as MainActivity).supportActionBar?.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(requireContext(), R.color.purple_500)))
         binding.timersRecycler.layoutManager = LinearLayoutManager(requireContext())
-        binding.timersRecycler.adapter = WorkoutRecyclerViewAdapter(viewModel)
-        //binding.timersRecycler.scrollToPosition(2
-
+        binding.timersRecycler.adapter = WorkoutRecyclerViewAdapter(viewModel, this)
 
         binding.createButton.setOnClickListener {
-            viewModel.workoutEdit.value = -1
+            viewModel.workoutEdit = -1
+            findNavController().navigate(R.id.action_mainFragment_to_editFragment)
         }
     }
 
@@ -58,6 +55,14 @@ class MainFragment : Fragment(), MenuProvider {
             }
             else -> false
         }
+    }
+
+    override fun onPlayButtonClick() {
+        findNavController().navigate(R.id.action_mainFragment_to_timerFragment)
+    }
+
+    override fun onEditButtonClick() {
+        findNavController().navigate(R.id.action_mainFragment_to_editFragment)
     }
 
 }
