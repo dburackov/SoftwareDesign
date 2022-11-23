@@ -43,7 +43,7 @@ class Workout {
     var color : String = colors[Random.nextInt(0, colors.size - 1)]
 
     fun getValues() : IntArray {
-        val result = IntArray((cycles + 1) * 2)
+        val result = IntArray(size())
         result[0] = warmup
         result[result.size - 1] = cooldown
         for (i in 0 until cycles) {
@@ -52,15 +52,6 @@ class Workout {
         }
         return result
     }
-//
-//    fun getStages() : Array<String> {
-//        val result = Array((cycles + 1) * 2) {""}
-//        result[0] = "Warm up"
-//        result[result.size - 1] = "Cooldown"
-//        for (i in 0 until cycles) {
-//            result[i * 2 + 1] = "Work"
-//            result[i * 2 + 2] = "Rest"
-//        }
-//        return result
-//    }
+
+    fun size() : Int = (cycles + 1) * 2
 }

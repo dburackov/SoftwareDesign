@@ -4,12 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.MutableLiveData
 
 open class MainViewModel : ViewModel() {
-    var workoutEdit = MutableLiveData<Int>()
-    var workoutGo = MutableLiveData<Int>()
+    var workoutEdit : Int = 0
+    var workoutRun : Int? = null
+
+    var workoutId = 0
+    var currentTime = 0
+    var currentStage = 0
+    var timerStarted = true
 
     lateinit var db : Database
-
-    init {
-        //temp.value = 0
-    }
 }

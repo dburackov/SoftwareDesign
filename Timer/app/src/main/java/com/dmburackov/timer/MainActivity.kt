@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -26,22 +27,14 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController)
 
-        viewModel.workoutEdit.observe(this) {
-            navController.navigate(R.id.action_mainFragment_to_editFragment)
-        }
-        viewModel.workoutGo.observe(this) {
+        val currentWorkout = intent.getIntExtra(TimerService.WORKOUT_ID, -1)
+        if (currentWorkout >= 0) {
+            viewModel.workoutId = currentWorkout
+            viewModel.currentTime = intent.getIntExtra(TimerService.CURRENT_TIME, 0)
+            viewModel.currentStage = intent.getIntExtra(TimerService.CURRENT_STAGE, 0)
+            viewModel.timerStarted = intent.getBooleanExtra(TimerService.TIMER_STATE, true)
             navController.navigate(R.id.action_mainFragment_to_timerFragment)
         }
-    }
-
-//    override fun onNewIntent(intent: Intent?) {
-//        super.onNewIntent(intent)
-//    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.workoutGo.removeObservers(this)
-        viewModel.workoutEdit.removeObservers(this)
     }
 
     override fun onSupportNavigateUp(): Boolean {

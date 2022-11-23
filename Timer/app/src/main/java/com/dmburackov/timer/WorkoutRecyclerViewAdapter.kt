@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dmburackov.timer.databinding.WorkoutListItemBinding
 import org.w3c.dom.Text
 
-class WorkoutRecyclerViewAdapter(private val viewModel : MainViewModel)
+class WorkoutRecyclerViewAdapter(private val viewModel : MainViewModel, private val listener : Listener)
     : RecyclerView.Adapter<WorkoutRecyclerViewAdapter.WorkoutViewHolder>()
 {
 
@@ -36,20 +36,27 @@ class WorkoutRecyclerViewAdapter(private val viewModel : MainViewModel)
         holder.binding.restText.text = holder.binding.restText.text.toString().plus("${workout.rest} sec")
         holder.binding.cyclesText.text = holder.binding.cyclesText.text.toString().plus(workout.cycles.toString())
         holder.binding.cooldownText.text = holder.binding.cooldownText.text.toString().plus("${workout.cooldown} sec")
-
         holder.binding.mainLayout.setBackgroundColor(Color.parseColor("#${workout.color}"))
-        //holder.binding.mainLayout.background?.setTint(Color.parseColor("#000000"))
 
         holder.binding.playButton.setOnClickListener {
-            viewModel.workoutGo.value = workout.id
+            //viewModel.workoutGo.value = workout.id
+            viewModel.workoutRun = workout.id
+            listener.onPlayButtonClick()
         }
         holder.binding.editButton.setOnClickListener {
-            viewModel.workoutEdit.value = workout.id
+            //viewModel.workoutEdit.value = workout.id
+            viewModel.workoutEdit = workout.id
+            listener.onEditButtonClick()
         }
     }
 
     override fun getItemCount(): Int {
         return viewModel.db.size()
+    }
+
+    interface Listener {
+        fun onPlayButtonClick()
+        fun onEditButtonClick()
     }
 
 }
