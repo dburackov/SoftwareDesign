@@ -25,7 +25,8 @@ class Database(private val context : Context) : SQLiteOpenHelper(context, DATABA
                 "$COL_WORK INTEGER," +
                 "$COL_REST INTEGER," +
                 "$COL_CYCLES INTEGER," +
-                "$COL_COOLDOWN INTEGER)"
+                "$COL_COOLDOWN INTEGER," +
+                "$COL_COLOR VARCHAR(256))"
 
         db?.execSQL(createTable)
     }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Timer</string>
+    <string name="warmup">Разминат</string>
+    <string name="work">Работат</string>
+    <string name="rest">Атдыхат</string>
+    <string name="cycles">Цыклы</string>
+    <string name="cooldown">Кулдаун</string>
+    <string name="workouts">Тринировки</string>
+    <string name="title">Назване</string>
+    <string name="finish">Маладец!</string>
+    <string name="edit">Ридактирыват</string>
+    <string name="create">Саздат</string>
+    <string name="sec">сек</string>
+    <string name="settings">Настройка</string>
+    <string name="general">Общие</string>
+    <string name="theme">Тема</string>
+    <string name="language">Язык</string>
+    <string name="font_size">Размер шрифт</string>
+    <string name="storage">Хранит</string>
+    <string name="delete_all">Удалит всех</string>
+    <string name="delete_all_summary">Удалит всех тринировка с телефон</string>
+</resources>

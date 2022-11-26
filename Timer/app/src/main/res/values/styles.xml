@@ -3,20 +3,23 @@
 
     <style name="edit_fragment_text">
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textAlignment">center</item>
-        <item name="android:textColor">@color/black</item>
+<!--        <item name="android:textAlignment">center</item>-->
+        <item name="android:gravity">center_vertical</item>
+<!--        <item name="android:textColor">@color/black</item>-->
         <item name="android:textSize">20sp</item>
+        <item name="android:layout_width">150dp</item>
     </style>
 
     <style name="edit_fragment_edit">
         <item name="android:textSize">20sp</item>
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">true</item>
-        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_height">62dp</item>
+        <item name="android:layout_width">150dp</item>
         <item name="android:gravity">center</item>
-        <item name="android:layout_marginStart">50dp</item>
-        <item name="android:layout_marginEnd">50dp</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:layout_marginEnd">10dp</item>
         <item name="android:maxLength">4</item>
-        <item name="android:textColor">@color/black</item>
+<!--        <item name="android:textColor">@color/black</item>-->
     </style>
 </resources>

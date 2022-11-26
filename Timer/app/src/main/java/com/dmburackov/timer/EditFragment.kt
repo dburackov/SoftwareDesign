@@ -39,7 +39,7 @@ class EditFragment : Fragment(), MenuProvider {
         toast.setGravity(Gravity.CENTER, 0, 0)
 
         createState = viewModel.workoutEdit== -1
-        (activity as MainActivity).supportActionBar?.title = if (createState) {"Create"} else {"Edit"}
+        (activity as MainActivity).supportActionBar?.title = if (createState) {this.getString(R.string.create)} else {this.getString(R.string.edit)}
         if (createState) {
             binding.titleEdit.setText("Workout ${viewModel.db.size() + 1}")
         } else {

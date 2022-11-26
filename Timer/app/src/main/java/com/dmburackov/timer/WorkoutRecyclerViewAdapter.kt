@@ -31,11 +31,11 @@ class WorkoutRecyclerViewAdapter(private val viewModel : MainViewModel, private 
     override fun onBindViewHolder(holder: WorkoutViewHolder, position: Int) {
         val workout = viewModel.db.getWorkoutByPosition(position)
         holder.binding.titleText.text = workout.title
-        holder.binding.warmupText.text = holder.binding.warmupText.text.toString().plus("${workout.warmup} sec")
-        holder.binding.workText.text = holder.binding.workText.text.toString().plus("${workout.work} sec")
-        holder.binding.restText.text = holder.binding.restText.text.toString().plus("${workout.rest} sec")
-        holder.binding.cyclesText.text = holder.binding.cyclesText.text.toString().plus(workout.cycles.toString())
-        holder.binding.cooldownText.text = holder.binding.cooldownText.text.toString().plus("${workout.cooldown} sec")
+        holder.binding.warmupText.text = holder.binding.warmupText.text.toString().plus(": ${workout.warmup} sec")
+        holder.binding.workText.text = holder.binding.workText.text.toString().plus(": ${workout.work} sec")
+        holder.binding.restText.text = holder.binding.restText.text.toString().plus(": ${workout.rest} sec")
+        holder.binding.cyclesText.text = holder.binding.cyclesText.text.toString().plus(": " + workout.cycles.toString())
+        holder.binding.cooldownText.text = holder.binding.cooldownText.text.toString().plus(": ${workout.cooldown} sec")
         holder.binding.mainLayout.setBackgroundColor(Color.parseColor("#${workout.color}"))
 
         holder.binding.playButton.setOnClickListener {
