@@ -1,15 +1,10 @@
 package com.dmburackov.timer
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 
 class MainActivity : AppCompatActivity() {
@@ -17,6 +12,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val prefManager = PrefManager(this)
+        prefManager.updateFont(prefManager.getFont())
+        prefManager.updateLang(prefManager.getLang())
+        prefManager.updateTheme(prefManager.getTheme())
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 

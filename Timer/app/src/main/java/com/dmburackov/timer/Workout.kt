@@ -1,5 +1,6 @@
 package com.dmburackov.timer
 
+import android.content.res.Resources
 import kotlin.random.Random
 
 class Workout {
@@ -35,11 +36,11 @@ class Workout {
 
     var id : Int = 0
     var title : String = ""
-    var warmup : Int = 1
-    var work : Int = 1
-    var rest : Int = 1
-    var cycles : Int = 1
-    var cooldown : Int = 1
+    var warmup : Int = 5
+    var work : Int = 6
+    var rest : Int = 6
+    var cycles : Int = 3
+    var cooldown : Int = 6
     var color : String = colors[Random.nextInt(0, colors.size - 1)]
 
     fun getValues() : IntArray {

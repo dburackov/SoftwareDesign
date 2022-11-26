@@ -1,3 +1,4 @@
+
 package com.dmburackov.timer
 
 import android.content.SharedPreferences
@@ -6,7 +7,10 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import android.app.AlertDialog
+import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.fragment.app.activityViewModels
 
 class PreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -14,6 +18,8 @@ class PreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnShare
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
+
+        (activity as MainActivity).supportActionBar?.title = this.getString(R.string.settings)
 
         PreferenceManager.getDefaultSharedPreferences(requireContext())
             .registerOnSharedPreferenceChangeListener(this)
@@ -41,13 +47,12 @@ class PreferenceFragment : PreferenceFragmentCompat(), SharedPreferences.OnShare
     override fun onSharedPreferenceChanged(prefs: SharedPreferences?, key: String?) {
         when (key) {
             "theme" -> {
-                //activity?.recreate()
-            }
-            "language" -> {
                 activity?.recreate()
             }
-            "font_size" -> {
-                //Toast.makeText(requireActivity(), "FONT_CHANGED", Toast.LENGTH_SHORT).show()
+            "lang" -> {
+                activity?.recreate()
+            }
+            "font" -> {
                 activity?.recreate()
             }
         }

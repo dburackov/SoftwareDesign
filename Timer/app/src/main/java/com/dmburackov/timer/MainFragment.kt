@@ -3,6 +3,7 @@ package com.dmburackov.timer
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -24,7 +25,6 @@ class MainFragment : Fragment(), MenuProvider, WorkoutRecyclerViewAdapter.Listen
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentMainBinding.inflate(inflater)
-
         return binding.root
     }
 
@@ -32,8 +32,20 @@ class MainFragment : Fragment(), MenuProvider, WorkoutRecyclerViewAdapter.Listen
         super.onViewCreated(view, savedInstanceState)
         activity?.addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
 
-        (activity as MainActivity).supportActionBar?.title = "Workouts: ${viewModel.db.size()}"
-        (activity as MainActivity).supportActionBar?.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(requireContext(), R.color.purple_500)))
+        (activity as MainActivity).supportActionBar?.title = this.getString(R.string.workouts) + ": ${viewModel.db.size()}"
+        if (PrefManager(requireContext()).getTheme() == "light") {
+            (activity as MainActivity).supportActionBar?.setBackgroundDrawable(
+                ColorDrawable(
+                    ContextCompat.getColor(requireContext(), R.color.purple_500)
+                )
+            )
+        } else {
+            (activity as MainActivity).supportActionBar?.setBackgroundDrawable(
+                ColorDrawable(
+                    ContextCompat.getColor(requireContext(), R.color.black)
+                )
+            )
+        }
         binding.timersRecycler.layoutManager = LinearLayoutManager(requireContext())
         binding.timersRecycler.adapter = WorkoutRecyclerViewAdapter(viewModel, this)
 

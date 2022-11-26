@@ -61,7 +61,7 @@ class TimerFragment : Fragment(), MenuProvider {
         (activity as MainActivity).supportActionBar?.title = workout.title
         binding.mainLayout.background = ColorDrawable(Color.parseColor("#${workout.color}"))
         binding.timeText.text = workout.warmup.toString()
-        binding.stageText.text = "Warm up"
+        binding.stageText.text = this.getString(R.string.warmup)
 
         binding.stageRecycler.layoutManager = LinearLayoutManager(context)
         adapter = StageAdapter(workout)
@@ -156,7 +156,7 @@ class TimerFragment : Fragment(), MenuProvider {
             currentTime = intent.getIntExtra(TimerService.CURRENT_TIME, 0)
             currentStage = intent.getIntExtra(TimerService.CURRENT_STAGE, 0)
             if (currentTime == -1) {
-                binding.stageText.text = "Finish!"
+                binding.stageText.text = context.getString(R.string.finish)
                 binding.timeText.text = ""
                 binding.nextButton.isVisible = false
                 binding.prevButton.isVisible = false
